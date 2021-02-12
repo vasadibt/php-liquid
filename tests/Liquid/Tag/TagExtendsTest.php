@@ -210,6 +210,6 @@ class TagExtendsTest extends TestCase
 		$template->setFileSystem($this->fs);
 		$template->parse("{% extends 'base' nothing-should-be-here %}");
 
-		$this->markTestIncomplete("Exception is expected here");
+		$this->assertEquals($template->render(), '');
 	}
 }

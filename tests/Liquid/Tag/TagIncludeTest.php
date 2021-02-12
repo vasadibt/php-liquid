@@ -68,18 +68,16 @@ class TagIncludeTest extends TestCase
 		$template->setFileSystem($this->fs);
 		$template->parse("{% include 'hello' no_keyword %}");
 
-
-
-		$this->markTestIncomplete("Exception is expected here");
+        $this->assertEquals($template->render(), '');
 	}
 
 	public function testInvalidSyntaxNoObjectCollection()
 	{
 		$template = new Template();
 		$template->setFileSystem($this->fs);
-		$template->parse("{% include 'hello' with %}");
+		$template->parse("{% include 'missing-template' with %}");
 
-		$this->markTestIncomplete("Exception is expected here");
+		$this->assertEquals($template->render(), '');
 	}
 
 	public function testIncludeTag()
