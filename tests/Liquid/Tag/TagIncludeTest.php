@@ -68,6 +68,8 @@ class TagIncludeTest extends TestCase
 		$template->setFileSystem($this->fs);
 		$template->parse("{% include 'hello' no_keyword %}");
 
+
+
 		$this->markTestIncomplete("Exception is expected here");
 	}
 
@@ -127,10 +129,10 @@ class TagIncludeTest extends TestCase
 		Liquid::set('INCLUDE_PREFIX', '');
 		Liquid::set('INCLUDE_SUFFIX', 'tpl');
 
-		$template = new Template(dirname(__DIR__).DIRECTORY_SEPARATOR.self::TEMPLATES_DIR);
+		$template = new Template(dirname(__DIR__) . DIRECTORY_SEPARATOR . self::TEMPLATES_DIR);
 		$template->parse("{% include 'mypartial' %}");
 		// template include inserts a new line
-		$this->assertEquals("test content\n", $template->render());
+		$this->assertEquals("test content", $template->render());
 	}
 
 	public function testIncludePassPlainValue()
