@@ -99,6 +99,7 @@ class StandardFiltersTest extends TestCase
 		$data = array(
 			'UpperCaseMiXed' => 'uppercasemixed',
 			3 => 3,
+            'Éva' => 'éva',
 		);
 
 		foreach ($data as $element => $expected) {
@@ -110,6 +111,7 @@ class StandardFiltersTest extends TestCase
 	{
 		$data = array(
 			'UpperCaseMiXed' => 'UPPERCASEMIXED',
+			'éva' => 'ÉVA',
 			3 => 3,
 		);
 
@@ -272,6 +274,8 @@ class StandardFiltersTest extends TestCase
 		foreach ($data as $element => $expected) {
 			$this->assertEquals($expected, StandardFilters::replace_first($element, 'Word', 'Hello'));
 		}
+
+        $this->assertEquals('Who is the Ádám daughter', StandardFilters::replace_first('Who is the Éva daughter', 'Éva', 'Ádám'));
 	}
 
 	public function testRemove()
@@ -298,6 +302,8 @@ class StandardFiltersTest extends TestCase
 		foreach ($data as $element => $expected) {
 			$this->assertEquals($expected, StandardFilters::remove_first($element, 'Word'));
 		}
+
+        $this->assertEquals('Who is the  daughter', StandardFilters::remove_first('Who is the Éva daughter', 'Éva'));
 	}
 
 	public function testAppend()
@@ -398,6 +404,10 @@ class StandardFiltersTest extends TestCase
 				'12345',
 				'34'
 			),
+            array(
+                'Ádám',
+                'ám'
+            ),
 			array(
 				100,
 				100
@@ -432,6 +442,9 @@ class StandardFiltersTest extends TestCase
 
 		// Custom ending
 		$this->assertEquals('abcend', StandardFilters::truncate('abcdef', 3, 'end'));
+
+        // Custom character
+        $this->assertEquals('Ádá...', StandardFilters::truncate('Ádám', 3));
 	}
 
 	public function testTruncateWords()

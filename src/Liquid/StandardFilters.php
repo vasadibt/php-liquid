@@ -18,7 +18,7 @@ use Liquid\Exception\RenderException;
  */
 class StandardFilters
 {
-	
+
 	/**
 	 * Add one string to another
 	 *
@@ -31,7 +31,7 @@ class StandardFilters
 	{
 		return $input . $string;
 	}
-	
+
 
 	/**
 	 * Capitalize words in the input sentence
@@ -46,7 +46,7 @@ class StandardFilters
 			return $matches[1] . ucfirst($matches[2]);
 		}, ucwords($input));
 	}
-	
+
 
 	/**
 	 * @param mixed $input number
@@ -57,7 +57,7 @@ class StandardFilters
 	{
 		return (int) ceil((float)$input);
 	}
-	
+
 
 	/**
 	 * Formats a date using strftime
@@ -79,8 +79,8 @@ class StandardFilters
 
 		return strftime($format, $input);
 	}
-	
-	
+
+
 	/**
 	 * Default
 	 *
@@ -94,8 +94,8 @@ class StandardFilters
 		$isBlank = $input == '' || $input === false || $input === null;
 		return $isBlank ? $default_value : $input;
 	}
-	
-	
+
+
 	/**
 	 * division
 	 *
@@ -109,20 +109,21 @@ class StandardFilters
 		return (float)$input / (float)$operand;
 	}
 
-	
-	/**
-	 * Convert an input to lowercase
-	 *
-	 * @param string $input
-	 *
-	 * @return string
-	 */
-	public static function downcase($input)
+
+    /**
+     * Convert an input to lowercase
+     *
+     * @param string $input
+     * @param string $encoding
+     *
+     * @return string
+     */
+	public static function downcase($input, $encoding = 'UTF-8')
 	{
-		return is_string($input) ? strtolower($input) : $input;
+        return is_string($input) ? mb_strtolower($input, $encoding) : $input;
 	}
-	
-	
+
+
 	/**
 	 * Pseudo-filter: negates auto-added escape filter
 	 *
@@ -187,8 +188,8 @@ class StandardFilters
 		}
 		return is_array($input) ? reset($input) : $input;
 	}
-	
-	
+
+
 	/**
 	 * @param mixed $input number
 	 *
@@ -198,8 +199,8 @@ class StandardFilters
 	{
 		return (int) floor((float)$input);
 	}
-	
-	
+
+
 	/**
 	 * Joins elements of an array with a given character between them
 	 *
@@ -222,8 +223,8 @@ class StandardFilters
 		}
 		return is_array($input) ? implode($glue, $input) : $input;
 	}
-	
-	
+
+
 	/**
 	 * Returns the last element of an array
 	 *
@@ -242,7 +243,7 @@ class StandardFilters
 		}
 		return is_array($input) ? end($input) : $input;
 	}
-	
+
 
 	/**
 	 * @param string $input
@@ -253,8 +254,8 @@ class StandardFilters
 	{
 		return ltrim($input);
 	}
-	
-	
+
+
 	/**
 	 * Map/collect on a given property
 	 *
@@ -280,7 +281,7 @@ class StandardFilters
 			return null;
 		}, $input);
 	}
-	
+
 
 	/**
 	 * subtraction
@@ -294,8 +295,8 @@ class StandardFilters
 	{
 		return (float)$input - (float)$operand;
 	}
-	
-	
+
+
 	/**
 	 * modulo
 	 *
@@ -308,8 +309,8 @@ class StandardFilters
 	{
 		return fmod((float)$input, (float)$operand);
 	}
-	
-	
+
+
 	/**
 	 * Replace each newline (\n) with html break
 	 *
@@ -321,7 +322,7 @@ class StandardFilters
 	{
 		return is_string($input) ? str_replace("\n", "<br />\n", $input) : $input;
 	}
-		
+
 
 	/**
 	 * addition
@@ -335,7 +336,7 @@ class StandardFilters
 	{
 		return (float)$input + (float)$operand;
 	}
-	
+
 
 	/**
 	 * Prepend a string to another
@@ -349,7 +350,7 @@ class StandardFilters
 	{
 		return $string . $input;
 	}
-	
+
 
 	/**
 	 * Remove a substring
@@ -365,23 +366,25 @@ class StandardFilters
 	}
 
 
-	/**
-	 * Remove the first occurrences of a substring
-	 *
-	 * @param string $input
-	 * @param string $string
-	 *
-	 * @return string
-	 */
-	public static function remove_first($input, $string)
+    /**
+     * Remove the first occurrences of a substring
+     *
+     * @param string $input
+     * @param string $string
+     * @param string $encoding
+     *
+     * @return string
+     */
+	public static function remove_first($input, $string, $encoding = 'UTF-8')
 	{
-		if (($pos = strpos($input, $string)) !== false) {
-			$input = substr_replace($input, '', $pos, strlen($string));
+        if (($pos = mb_strpos($input, $string, 0, $encoding)) !== false) {
+            $input = mb_substr($input, 0, $pos, $encoding)
+                . mb_substr($input, $pos + mb_strlen($string, $encoding), null, $encoding);
 		}
 
 		return $input;
 	}
-	
+
 
 	/**
 	 * Replace occurrences of a string with another
@@ -398,25 +401,28 @@ class StandardFilters
 	}
 
 
-	/**
-	 * Replace the first occurrences of a string with another
-	 *
-	 * @param string $input
-	 * @param string $string
-	 * @param string $replacement
-	 *
-	 * @return string
-	 */
-	public static function replace_first($input, $string, $replacement = '')
+    /**
+     * Replace the first occurrences of a string with another
+     *
+     * @param string $input
+     * @param string $string
+     * @param string $replacement
+     * @param string $encoding
+     *
+     * @return string
+     */
+    public static function replace_first($input, $string, $replacement = '', $encoding = 'UTF-8')
 	{
-		if (($pos = strpos($input, $string)) !== false) {
-			$input = substr_replace($input, $replacement, $pos, strlen($string));
+        if (($pos = mb_strpos($input, $string, 0, $encoding)) !== false) {
+            $input = mb_substr($input, 0, $pos, $encoding)
+                . $replacement
+                . mb_substr($input, $pos + mb_strlen($string, $encoding), null, $encoding);
 		}
 
 		return $input;
 	}
-	
-	
+
+
 	/**
 	 * Reverse the elements of an array
 	 *
@@ -431,8 +437,8 @@ class StandardFilters
 		}
 		return array_reverse($input);
 	}
-	
-	
+
+
 	/**
 	 * Round a number
 	 *
@@ -445,8 +451,8 @@ class StandardFilters
 	{
 		return round((float)$input, (int)$n);
 	}
-	
-	
+
+
 	/**
 	 * @param string $input
 	 *
@@ -457,7 +463,7 @@ class StandardFilters
 		return rtrim($input);
 	}
 
-	
+
 	/**
 	 * Return the size of an array or of an string
 	 *
@@ -489,16 +495,17 @@ class StandardFilters
 		// only plain values and stringable objects left at this point
 		return strlen($input);
 	}
-	
 
-	/**
-	 * @param array|\Iterator|string $input
-	 * @param int $offset
-	 * @param int $length
-	 *
-	 * @return array|\Iterator|string
-	 */
-	public static function slice($input, $offset, $length = null)
+
+    /**
+     * @param array|\Iterator|string $input
+     * @param int $offset
+     * @param int|null $length
+     * @param string $encoding
+     *
+     * @return array|\Iterator|string
+     */
+    public static function slice($input, $offset, $length = null, $encoding = 'UTF-8')
 	{
 		if ($input instanceof \Iterator) {
 			$input = iterator_to_array($input);
@@ -506,15 +513,13 @@ class StandardFilters
 		if (is_array($input)) {
 			$input = array_slice($input, $offset, $length);
 		} elseif (is_string($input)) {
-			$input = $length === null
-				? substr($input, $offset)
-				: substr($input, $offset, $length);
-		}
+            $input = mb_substr($input, $offset, $length, $encoding);
+        }
 
 		return $input;
 	}
-	
-	
+
+
 	/**
 	 * Sort the elements of an array
 	 *
@@ -581,8 +586,8 @@ class StandardFilters
 	{
 		return trim($input);
 	}
-	
-	
+
+
 	/**
 	 * Removes html tags from text
 	 *
@@ -594,7 +599,7 @@ class StandardFilters
 	{
 		return is_string($input) ? strip_tags($input) : $input;
 	}
-	
+
 
 	/**
 	 * Strip all newlines (\n, \r) from string
@@ -609,7 +614,7 @@ class StandardFilters
 			"\n", "\r"
 		), '', $input) : $input;
 	}
-	
+
 
 	/**
 	 * multiplication
@@ -623,22 +628,23 @@ class StandardFilters
 	{
 		return (float)$input * (float)$operand;
 	}
-	
 
-	/**
-	 * Truncate a string down to x characters
-	 *
-	 * @param string $input
-	 * @param int $characters
-	 * @param string $ending string to append if truncated
-	 *
-	 * @return string
-	 */
-	public static function truncate($input, $characters = 100, $ending = '...')
+
+    /**
+     * Truncate a string down to x characters
+     *
+     * @param string $input
+     * @param int $characters
+     * @param string $ending string to append if truncated
+     * @param string $encoding
+     *
+     * @return string
+     */
+	public static function truncate($input, $characters = 100, $ending = '...', $encoding = 'UTF-8')
 	{
 		if (is_string($input) || is_numeric($input)) {
-			if (strlen($input) > $characters) {
-				return substr($input, 0, $characters) . $ending;
+            if (mb_strlen($input, $encoding) > $characters) {
+                $input = mb_substr($input, 0, $characters, $encoding) . $ending;
 			}
 		}
 
@@ -667,7 +673,7 @@ class StandardFilters
 
 		return $input;
 	}
-	
+
 
 	/**
 	 * Remove duplicate elements from an array
@@ -685,16 +691,17 @@ class StandardFilters
 	}
 
 
-	/**
-	 * Convert an input to uppercase
-	 *
-	 * @param string $input
-	 *
-	 * @return string
-	 */
-	public static function upcase($input)
+    /**
+     * Convert an input to uppercase
+     *
+     * @param string $input
+     * @param string $encoding
+     *
+     * @return string
+     */
+	public static function upcase($input, $encoding = 'UTF-8')
 	{
-		return is_string($input) ? strtoupper($input) : $input;
+        return is_string($input) ? mb_strtoupper($input, $encoding) : $input;
 	}
 
 
